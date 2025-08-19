@@ -394,6 +394,8 @@ class WorkerController:
         self.sendcommand("steal", indices=indices)
 
     def shutdown(self) -> None:
+        print("Inside `self.shutdown`.")
+        import sys; sys.stdout.flush()
         if not self._down:
             try:
                 print("Calling `self.sendcommand('shutdown')`.")
