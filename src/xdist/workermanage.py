@@ -114,8 +114,10 @@ class NodeManager:
         return node
 
     def teardown_nodes(self) -> None:
+        print("Calling `teardown_nodes`.")
         self.group.terminate(self.EXIT_TIMEOUT)
-
+        print("Called `teardown_nodes`.")
+    
     def _gettxspecs(self) -> list[execnet.XSpec]:
         return [execnet.XSpec(x) for x in parse_tx_spec_config(self.config)]
 
@@ -353,14 +355,23 @@ class WorkerController:
             self.channel.setcallback(self.process_from_remote, endmarker=Marker.END)
 
     def ensure_teardown(self) -> None:
+        print("Inside `ensure_teardown`.")
+        
         if hasattr(self, "channel"):
+            print("Has `channel`.")
             if not self.channel.isclosed():
+                print("`self.channel.isclosed` if `False`.")
                 self.log("closing", self.channel)
+                print("Calling `self.channel.close()`.")
                 self.channel.close()
-            # del self.channel
+                print("Called `self.channel.close()`.")
+        # del self.channel
         if hasattr(self, "gateway"):
+            print("Has `gateway`.")
             self.log("exiting", self.gateway)
+            print("Calling `self.gateway.exit()`.")
             self.gateway.exit()
+            print("Called `self.gateway.exit()`.")
             # del self.gateway
 
     def send_runtest_some(self, indices: Sequence[int]) -> None:
@@ -375,9 +386,13 @@ class WorkerController:
     def shutdown(self) -> None:
         if not self._down:
             try:
+                print("Calling `self.sendcommand('shutdown')`.")
                 self.sendcommand("shutdown")
+                print("Called `self.sendcommand('shutdown')`.")
             except OSError:
+                print("Get `OSError` during calling `self.sendcommand('shutdown')`.")
                 pass
+                print("`pass` after getting `OSError` during calling `self.sendcommand('shutdown')`.")
             self._shutdown_sent = True
 
     def sendcommand(self, name: str, **kwargs: object) -> None:
@@ -463,7 +478,9 @@ class WorkerController:
             excinfo = pytest.ExceptionInfo.from_current()
             print("!" * 20, excinfo)
             self.config.notify_exception(excinfo)
+            print("Get exception in `process_from_remote`. Calling `self.shutdown`.")
             self.shutdown()
+            print("Get exception in `process_from_remote`. Called `self.shutdown`.")
             self.notify_inproc("errordown", node=self, error=excinfo)
 
 
