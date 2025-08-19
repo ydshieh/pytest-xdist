@@ -115,8 +115,10 @@ class NodeManager:
 
     def teardown_nodes(self) -> None:
         print("Calling `teardown_nodes`.")
+        import sys; sys.stdout.flush()
         self.group.terminate(self.EXIT_TIMEOUT)
         print("Called `teardown_nodes`.")
+        import sys; sys.stdout.flush()
     
     def _gettxspecs(self) -> list[execnet.XSpec]:
         return [execnet.XSpec(x) for x in parse_tx_spec_config(self.config)]
@@ -359,19 +361,27 @@ class WorkerController:
         
         if hasattr(self, "channel"):
             print("Has `channel`.")
+            import sys; sys.stdout.flush()
             if not self.channel.isclosed():
                 print("`self.channel.isclosed` if `False`.")
+                import sys; sys.stdout.flush()
                 self.log("closing", self.channel)
                 print("Calling `self.channel.close()`.")
+                import sys; sys.stdout.flush()
                 self.channel.close()
                 print("Called `self.channel.close()`.")
+                import sys; sys.stdout.flush() 
+
         # del self.channel
         if hasattr(self, "gateway"):
             print("Has `gateway`.")
+            import sys; sys.stdout.flush()
             self.log("exiting", self.gateway)
             print("Calling `self.gateway.exit()`.")
+            import sys; sys.stdout.flush()
             self.gateway.exit()
             print("Called `self.gateway.exit()`.")
+            import sys; sys.stdout.flush()
             # del self.gateway
 
     def send_runtest_some(self, indices: Sequence[int]) -> None:
@@ -387,12 +397,16 @@ class WorkerController:
         if not self._down:
             try:
                 print("Calling `self.sendcommand('shutdown')`.")
+                import sys; sys.stdout.flush()
                 self.sendcommand("shutdown")
                 print("Called `self.sendcommand('shutdown')`.")
+                import sys; sys.stdout.flush()
             except OSError:
                 print("Get `OSError` during calling `self.sendcommand('shutdown')`.")
+                import sys; sys.stdout.flush()
                 pass
                 print("`pass` after getting `OSError` during calling `self.sendcommand('shutdown')`.")
+                import sys; sys.stdout.flush()                
             self._shutdown_sent = True
 
     def sendcommand(self, name: str, **kwargs: object) -> None:
@@ -479,8 +493,10 @@ class WorkerController:
             print("!" * 20, excinfo)
             self.config.notify_exception(excinfo)
             print("Get exception in `process_from_remote`. Calling `self.shutdown`.")
+            import sys; sys.stdout.flush()
             self.shutdown()
             print("Get exception in `process_from_remote`. Called `self.shutdown`.")
+            import sys; sys.stdout.flush()
             self.notify_inproc("errordown", node=self, error=excinfo)
 
 
